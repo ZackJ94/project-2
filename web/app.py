@@ -3,10 +3,9 @@
 Zack's Flask API.
 """
 
-from flask import Flask
-
 import os
 import configparser
+from flask import Flask, abort, send_from_directory
 
 app = Flask(__name__)
 
@@ -25,31 +24,32 @@ def parse_config(config_paths):
     config.read(config_path)
     return config
 
+# get config from credentials file
 config = parse_config(["credentials.ini", "default.ini"])
-message = config["DEFAULT"]["message"]
+_port = config["SERVER"]["PORT"]
+_debug = config["SERVER"]["DEBUG"]
 
-print(message)
+@app.route("/<string:request>")
+def serve(request):
 
-@app.route("/")
-def hello():
-    return "UOCIS docker demo!\n"
+    # check for illegal chars
+    if ("~" in request) or (".." in request):
+        abort(403)
 
-# TODO:
-# @app.route("/<string: request>")
-# def page(request):
-#   if request has illegal chars:
-#       send_from_dir(403)
-#   if request not found:
-#       send_from_dir(404)
+    elif os.path.isfile(f"./pages/{request}"):
+        return send_from_directory("./pages", f"{request}")
 
-# @app.route("/403")
-# def error403():
-#     pass
+    else:
+        abort(404)
 
-# @app.route("/404")
-# def error404():
-#     pass
+@app.errorhandler(403)
+def illegal(e):
+    return send_from_directory("./pages", "403.html"), 403
+
+@app.errorhandler(404)
+def notfound(e):
+    return send_from_directory("./pages", "404.html"), 404
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0') # TODO: port=xxx
+    app.run(debug=bool(_debug), host='0.0.0.0') # TODO: port=xxxx
