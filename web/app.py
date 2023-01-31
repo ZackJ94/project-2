@@ -26,18 +26,24 @@ def parse_config(config_paths):
 
 # get config from credentials file
 config = parse_config(["credentials.ini", "default.ini"])
-_port = config["SERVER"]["PORT"]
-_debug = config["SERVER"]["DEBUG"]
 
-@app.route("/<string:request>")
+# get port number (as int)
+port = int(config["SERVER"]["PORT"])
+
+# get debug setting (as bool)
+if (config["SERVER"]["DEBUG"] == "True"):
+    debug = True
+else:
+    debug = False
+
+@app.route("/<path:request>")
 def serve(request):
 
-    # check for illegal chars
     if ("~" in request) or (".." in request):
         abort(403)
 
     elif os.path.isfile(f"./pages/{request}"):
-        return send_from_directory("./pages", f"{request}")
+        return send_from_directory("./pages", f"{request}"), 200
 
     else:
         abort(404)
@@ -52,4 +58,4 @@ def notfound(e):
 
 
 if __name__ == "__main__":
-    app.run(debug=bool(_debug), host='0.0.0.0') # TODO: port=xxxx
+    app.run(debug = debug, host = '0.0.0.0', port = port)

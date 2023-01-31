@@ -1,8 +1,16 @@
 # UOCIS322 - Project 2 #
 
-This project will get you started with Docker and Flask. You need to have Docker set up on your machine to complete this project. You can alternatively use the machine we talked about in class.
+## Project Completed by Zack Johnson
+
+This project is an introduction to Docker and Flask. It is a small flask file server that responds to GET requests with the appropriate file, or error message. The flask app runs within a docker container.
+
+To use the app, you'll need to first build the docker image (`docker build -t some_image_name .`) and launch it within a container (`docker run -p xxxx:xxxx some_image_name`, where the 'xxxx' are specified port numbers).
+
+Once the container is up and running, you can send requests to the server via your web browser (at `localhost:xxxx`).
 
 ## Getting started
+
+This project will get you started with Docker and Flask. You need to have Docker set up on your machine to complete this project. You can alternatively use the machine we talked about in class.
 
 * Go to `web/`. Read every line of the docker file and the simple flask app.
 
